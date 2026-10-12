@@ -5,4 +5,5 @@ class Order:
 
     def place_order(self):
         self.card.charge(self.basket.calculate_order_total())
+        self.basket.reserve_items()
 

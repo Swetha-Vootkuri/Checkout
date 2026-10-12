@@ -27,6 +27,14 @@ class TestPlacingOrder(unittest.TestCase):
         order.place_order()
         mock_card.charge.assert_called_once_with(19.99)
 
+    def test_order_tells_basket_to_reserve_items(self):
+        mock_basket = Basket([])
+        mock_basket.reserve_items = Mock()
+        order = Order(mock_basket, Card())
+        order.place_order()
+        mock_basket.reserve_items.assert_called_once()
+
+
 
 
 
