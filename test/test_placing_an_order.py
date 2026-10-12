@@ -2,14 +2,7 @@ import unittest
 from unittest.mock import Mock
 
 from src.basket import Basket
-
-
-class Order:
-    def __init__ (self,basket):
-        self.basket = basket
-
-    def place_order(self):
-        self.basket.calculate_order_total()
+from src.order import Order
 
 
 class TestPlacingOrder(unittest.TestCase):
