@@ -2,13 +2,9 @@ import unittest
 from unittest.mock import Mock
 
 from src.basket import Basket
+from src.card import Card
 from src.item import Item
 from src.order import Order
-
-
-class Card:
-    def charge(self,amount):
-        pass
 
 
 class TestPlacingOrder(unittest.TestCase):
