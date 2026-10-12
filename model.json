@@ -43,7 +43,8 @@
             "name": "Item",
             "knows": [],
             "resp": [
-                "Reserve stock"
+                "Reserve stock",
+                "calculate_subtotal"
             ],
             "collab": []
         },
@@ -94,6 +95,17 @@
                     "to": "ys6fxhd",
                     "label": "Calculate order total",
                     "kind": "call"
+                },
+                {
+                    "id": "i3jmgtm",
+                    "from": "ys6fxhd",
+                    "to": "ckwzqxj",
+                    "label": "calculate_subtotal",
+                    "kind": "call",
+                    "loop": {
+                        "guard": "for each item",
+                        "last": "i3jmgtm"
+                    }
                 },
                 {
                     "id": "00ofhie",
