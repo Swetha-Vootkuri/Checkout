@@ -4,4 +4,4 @@ class Basket:
         self.items = items
 
     def calculate_order_total(self):
-        return sum(item.quantity * item.price for item in self.items)
+        return sum(item.calculate_subtotal() for item in self.items)
