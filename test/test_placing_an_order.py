@@ -1,7 +1,7 @@
 import unittest
 from unittest.mock import Mock
 
-from src.order import Basket
+from src.basket import Basket
 
 
 class Order:
