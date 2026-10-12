@@ -5,3 +5,6 @@ class Item:
 
     def calculate_subtotal(self):
         return self.quantity * self.price
+
+    def reserve_stock(self):
+        pass

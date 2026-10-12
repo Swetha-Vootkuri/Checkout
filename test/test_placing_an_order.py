@@ -34,6 +34,16 @@ class TestPlacingOrder(unittest.TestCase):
         order.place_order()
         mock_basket.reserve_items.assert_called_once()
 
+    def test_basket_tells_items_to_reserve_stock(self):
+        mock_item1 = Item("",0,0 )
+        mock_item2 = Item("",0,0 )
+        mock_item1.reserve_stock = Mock()
+        mock_item2.reserve_stock = Mock()
+        basket = Basket([mock_item1, mock_item2])
+        basket.reserve_items()
+        mock_item1.reserve_stock.assert_called_once()
+        mock_item2.reserve_stock.assert_called_once()
+
 
 
 

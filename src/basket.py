@@ -7,4 +7,5 @@ class Basket:
         return round(sum(item.calculate_subtotal() for item in self.items), 2)
 
     def reserve_items(self):
-        pass
+        for item in self.items:
+            item.reserve_stock()
