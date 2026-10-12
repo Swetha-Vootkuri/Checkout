@@ -2,13 +2,8 @@ import unittest
 from unittest.mock import Mock
 
 from src.basket import Basket
+from src.item import Item
 from src.order import Order
-
-
-class Item:
-    def __init__(self, product, quantity, price):
-        self.quantity = quantity
-        self.price = price
 
 
 class TestPlacingOrder(unittest.TestCase):
