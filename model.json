@@ -1,0 +1,405 @@
+{
+    "sync": true,
+    "classes": [
+        {
+            "id": "ctohewn",
+            "name": "Order",
+            "knows": [],
+            "resp": [
+                "Place order"
+            ],
+            "collab": [
+                "ys6fxhd",
+                "20ypiwz",
+                "5hkflnb",
+                "bzdl8on"
+            ]
+        },
+        {
+            "id": "ys6fxhd",
+            "name": "Basket",
+            "knows": [
+                "Items"
+            ],
+            "resp": [
+                "Calculate order total",
+                "Reserve items"
+            ],
+            "collab": [
+                "ckwzqxj"
+            ]
+        },
+        {
+            "id": "20ypiwz",
+            "name": "Card",
+            "knows": [],
+            "resp": [
+                "charge"
+            ],
+            "collab": []
+        },
+        {
+            "id": "ckwzqxj",
+            "name": "Item",
+            "knows": [],
+            "resp": [
+                "Reserve stock"
+            ],
+            "collab": []
+        },
+        {
+            "id": "5hkflnb",
+            "name": "Warehouse",
+            "knows": [],
+            "resp": [
+                "send shipping note"
+            ],
+            "collab": []
+        },
+        {
+            "id": "bzdl8on",
+            "name": "Order confirmation",
+            "knows": [],
+            "resp": [
+                "send"
+            ],
+            "collab": []
+        }
+    ],
+    "scenarios": [
+        {
+            "id": "ghwlorr",
+            "fid": "shds6y0",
+            "gsc": "Successful order",
+            "name": "Successful order",
+            "participants": [
+                "ctohewn",
+                "ys6fxhd",
+                "20ypiwz",
+                "ckwzqxj",
+                "5hkflnb",
+                "bzdl8on"
+            ],
+            "messages": [
+                {
+                    "id": "lpngmol",
+                    "from": "__client",
+                    "to": "ctohewn",
+                    "label": "Place order",
+                    "kind": "call"
+                },
+                {
+                    "id": "2ehmpv8",
+                    "from": "ctohewn",
+                    "to": "ys6fxhd",
+                    "label": "Calculate order total",
+                    "kind": "call"
+                },
+                {
+                    "id": "00ofhie",
+                    "from": "ys6fxhd",
+                    "to": "ctohewn",
+                    "label": "total",
+                    "kind": "return"
+                },
+                {
+                    "id": "ogoev06",
+                    "from": "ctohewn",
+                    "to": "20ypiwz",
+                    "label": "charge",
+                    "kind": "call"
+                },
+                {
+                    "id": "jhwmhc4",
+                    "from": "ctohewn",
+                    "to": "ys6fxhd",
+                    "label": "Reserve items",
+                    "kind": "call"
+                },
+                {
+                    "id": "4z48o2r",
+                    "from": "ys6fxhd",
+                    "to": "ckwzqxj",
+                    "label": "Reserve stock",
+                    "kind": "call",
+                    "loop": {
+                        "guard": "for each item",
+                        "last": "4z48o2r"
+                    }
+                },
+                {
+                    "id": "83c5eix",
+                    "from": "ys6fxhd",
+                    "to": "ctohewn",
+                    "label": "",
+                    "kind": "return"
+                },
+                {
+                    "id": "6178vza",
+                    "from": "ctohewn",
+                    "to": "5hkflnb",
+                    "label": "send shipping note",
+                    "kind": "call"
+                },
+                {
+                    "id": "ac2fg0w",
+                    "from": "ctohewn",
+                    "to": "bzdl8on",
+                    "label": "send",
+                    "kind": "call"
+                }
+            ]
+        }
+    ],
+    "specs": {
+        "features": [
+            {
+                "id": "shds6y0",
+                "name": "place-an-order.feature",
+                "text": "@checkout\nFeature: Place an order\n  As a customer\n  I want to pay for the items in my basket\n  So that they are shipped to me\n\n  Background:\n    Given the customer has a basket containing:\n      | product      | qty | price |\n      | Bamboo socks | 2   | £7.50 |\n      | Gift wrap    | 1   | £4.99 |\n\n  Scenario: Successful order\n    When the customer places the order\n    Then the order total is £19.99\n    And the customer's card is charged £19.99\n    And the stock for each item is reserved\n    And a shipping note is sent to the warehouse\n    And the customer receives an order confirmation\n\n  Scenario: Item out of stock\n    Given Bamboo socks are out of stock\n    When the customer places the order\n    Then the customer's card is not charged\n    And the customer is told which items are unavailable\n\n  Scenario Outline: Discount codes\n    Given the customer enters the discount code \"<code>\"\n    When the customer places the order\n    Then the order total is <total>\n\n    Examples:\n      | code    | total  |\n      | SAVE10  | £17.99 |\n      | NOTREAL | £19.99 |\n"
+            },
+            {
+                "id": "a9ynvyn",
+                "name": "ship-an-order.feature",
+                "text": "@fulfilment\nFeature: Ship an order\n  As a warehouse operator\n  I want to ship orders that have been paid for\n  So that customers receive their items\n\n  Background:\n    Given a paid order containing:\n      | product      | qty |\n      | Bamboo socks | 2   |\n      | Gift wrap    | 1   |\n\n  Scenario: Pick and pack\n    When the warehouse receives the shipping note\n    Then the stock for each item is deducted\n    And a parcel label is printed with the delivery address\n    And the order status is \"Packed\"\n\n  Scenario: Dispatch\n    Given the parcel has been packed\n    When the courier collects the parcel\n    Then the order status is \"Dispatched\"\n    And the customer receives a dispatch notification with a tracking number\n"
+            },
+            {
+                "id": "ax2b79z",
+                "name": "return-an-item.feature",
+                "text": "@returns\nFeature: Return an item\n  As a customer\n  I want to send back items I don't want\n  So that I get my money back\n\n  Background:\n    Given a dispatched order containing:\n      | product      | qty | price |\n      | Bamboo socks | 2   | £7.50 |\n\n  Scenario: Refund on return\n    When the customer returns 1 pair of Bamboo socks\n    Then the customer's card is refunded £7.50\n    And the stock for Bamboo socks is increased by 1\n    And the order status is \"Partially returned\"\n\n  Scenario: Return window has closed\n    Given the order was delivered 31 days ago\n    When the customer tries to return the order\n    Then the customer is told the return window has closed\n    And the customer's card is not refunded\n"
+            }
+        ],
+        "active": "shds6y0",
+        "links": [
+            {
+                "id": "p2vsqw5",
+                "key": "N|S|place an order|successful order|1",
+                "outcome": "Scenario Successful order  →  “order”",
+                "classId": "ctohewn",
+                "kind": "role",
+                "label": "Order",
+                "span": [
+                    1,
+                    1
+                ],
+                "fid": "shds6y0",
+                "feature": "Place an order",
+                "scenario": "Successful order",
+                "neg": false,
+                "phrase": "order"
+            },
+            {
+                "id": "nnzp7pq",
+                "key": "W|place an order|successful order|the customer places the order|1",
+                "outcome": "When the customer places the order",
+                "classId": "ctohewn",
+                "kind": "does",
+                "label": "Place order",
+                "span": null,
+                "fid": "shds6y0",
+                "feature": "Place an order",
+                "scenario": "Successful order",
+                "neg": false
+            },
+            {
+                "id": "bwcm92e",
+                "key": "W|place an order|item out of stock|the customer places the order|1",
+                "outcome": "When the customer places the order",
+                "classId": "ctohewn",
+                "kind": "does",
+                "label": "Place order",
+                "span": null,
+                "fid": "shds6y0",
+                "feature": "Place an order",
+                "scenario": "Item out of stock",
+                "neg": false
+            },
+            {
+                "id": "y73ehx1",
+                "key": "W|place an order|discount codes|the customer places the order|1",
+                "outcome": "When the customer places the order",
+                "classId": "ctohewn",
+                "kind": "does",
+                "label": "Place order",
+                "span": null,
+                "fid": "shds6y0",
+                "feature": "Place an order",
+                "scenario": "Discount codes",
+                "neg": false
+            },
+            {
+                "id": "3fzsmyl",
+                "key": "N|G|place an order||the customer has a basket containing:|1",
+                "outcome": "Given the customer has a basket containing:  →  “basket”",
+                "classId": "ys6fxhd",
+                "kind": "role",
+                "label": "Basket",
+                "span": [
+                    4,
+                    4
+                ],
+                "fid": "shds6y0",
+                "feature": "Place an order",
+                "scenario": "",
+                "neg": false,
+                "phrase": "basket"
+            },
+            {
+                "id": "56yey2n",
+                "key": "place an order|successful order|the order total is £19.99|1",
+                "outcome": "Then the order total is £19.99",
+                "classId": "ys6fxhd",
+                "kind": "does",
+                "label": "Calculate order total",
+                "span": null,
+                "fid": "shds6y0",
+                "feature": "Place an order",
+                "scenario": "Successful order",
+                "neg": false
+            },
+            {
+                "id": "0euqo2i",
+                "key": "D|place an order|1",
+                "outcome": "I want to pay for the items in my basket  →  “items”",
+                "classId": "ys6fxhd",
+                "kind": "knows",
+                "label": "Items",
+                "span": [
+                    6,
+                    6
+                ],
+                "fid": "shds6y0",
+                "feature": "Place an order",
+                "scenario": "",
+                "neg": false
+            },
+            {
+                "id": "p4snk56",
+                "key": "N|place an order|successful order|the customer's card is charged £19.99|1",
+                "outcome": "And the customer's card is charged £19.99  →  “card”",
+                "classId": "20ypiwz",
+                "kind": "role",
+                "label": "Card",
+                "span": [
+                    2,
+                    2
+                ],
+                "fid": "shds6y0",
+                "feature": "Place an order",
+                "scenario": "Successful order",
+                "neg": false,
+                "phrase": "card"
+            },
+            {
+                "id": "ep5swdj",
+                "key": "place an order|successful order|the customer's card is charged £19.99|1",
+                "outcome": "And the customer's card is charged £19.99",
+                "classId": "20ypiwz",
+                "kind": "does",
+                "label": "charge",
+                "span": null,
+                "fid": "shds6y0",
+                "feature": "Place an order",
+                "scenario": "Successful order",
+                "neg": false
+            },
+            {
+                "id": "exqaxwr",
+                "key": "N|place an order|successful order|the stock for each item is reserved|1",
+                "outcome": "And the stock for each item is reserved  →  “item”",
+                "classId": "ckwzqxj",
+                "kind": "role",
+                "label": "Item",
+                "span": [
+                    4,
+                    4
+                ],
+                "fid": "shds6y0",
+                "feature": "Place an order",
+                "scenario": "Successful order",
+                "neg": false,
+                "phrase": "item"
+            },
+            {
+                "id": "kdk45yu",
+                "key": "place an order|successful order|the stock for each item is reserved|1",
+                "outcome": "And the stock for each item is reserved",
+                "classId": "ckwzqxj",
+                "kind": "does",
+                "label": "Reserve stock",
+                "span": null,
+                "fid": "shds6y0",
+                "feature": "Place an order",
+                "scenario": "Successful order",
+                "neg": false
+            },
+            {
+                "id": "uizlhiw",
+                "key": "N|place an order|successful order|a shipping note is sent to the warehouse|1",
+                "outcome": "And a shipping note is sent to the warehouse  →  “warehouse”",
+                "classId": "5hkflnb",
+                "kind": "role",
+                "label": "Warehouse",
+                "span": [
+                    7,
+                    7
+                ],
+                "fid": "shds6y0",
+                "feature": "Place an order",
+                "scenario": "Successful order",
+                "neg": false,
+                "phrase": "warehouse"
+            },
+            {
+                "id": "pdpgrz2",
+                "key": "place an order|successful order|a shipping note is sent to the warehouse|1",
+                "outcome": "And a shipping note is sent to the warehouse",
+                "classId": "5hkflnb",
+                "kind": "does",
+                "label": "send shipping note",
+                "span": null,
+                "fid": "shds6y0",
+                "feature": "Place an order",
+                "scenario": "Successful order",
+                "neg": false
+            },
+            {
+                "id": "u8ya4uz",
+                "key": "N|place an order|successful order|the customer receives an order confirmation|1",
+                "outcome": "And the customer receives an order confirmation  →  “order confirmation”",
+                "classId": "bzdl8on",
+                "kind": "role",
+                "label": "Order confirmation",
+                "span": [
+                    4,
+                    5
+                ],
+                "fid": "shds6y0",
+                "feature": "Place an order",
+                "scenario": "Successful order",
+                "neg": false,
+                "phrase": "order confirmation"
+            },
+            {
+                "id": "ykcscow",
+                "key": "place an order|successful order|the customer receives an order confirmation|1",
+                "outcome": "And the customer receives an order confirmation",
+                "classId": "bzdl8on",
+                "kind": "does",
+                "label": "send",
+                "span": null,
+                "fid": "shds6y0",
+                "feature": "Place an order",
+                "scenario": "Successful order",
+                "neg": false
+            }
+        ]
+    },
+    "assoc": {
+        "ys6fxhd|ckwzqxj": {
+            "srcMult": "",
+            "tgtMult": "*",
+            "role": ""
+        }
+    }
+}
