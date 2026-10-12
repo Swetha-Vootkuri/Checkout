@@ -1,3 +1,3 @@
 class Card:
-    def charge(self,amount):
+    def charge(self, amount):
         pass

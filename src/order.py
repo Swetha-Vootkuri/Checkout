@@ -1,5 +1,5 @@
 class Order:
-    def __init__ (self,basket,card=None):
+    def __init__(self, basket, card):
         self.basket = basket
         self.card = card
 
